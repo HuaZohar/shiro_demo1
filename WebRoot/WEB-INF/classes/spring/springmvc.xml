@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<!-- 扫描controller -->
+	<context:component-scan base-package="cn.hr.ssm.controller"></context:component-scan>
+	
+	<!-- 静态资源文件的解析 
+		包括：js、css、img
+	-->
+<!-- 	<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>
+	<mvc:resources location="/img/" mapping="/img/**"></mvc:resources>
+	<mvc:resources location="/css/" mapping="/css/**"></mvc:resources> -->
+	
+	
+	<!-- 注解适配器 -->
+<!-- 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		在注解适配器中加入messageConverters
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"></bean>
+			</list>
+		</property>
+	</bean> -->
+	<!-- 如果使用的是<mvc:annotation-driven />则不用定义上边的内容 -->
+	
+	
+	<!-- 使用mvc：annotation-driven代替注解映射器和注解适配器 -->
+	<mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven>
+    
+    <!-- 试图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    	<property name="prefix" value="/WEB-INF/jsp/"></property>
+    	<property name="suffix" value=".jsp"></property>
+    </bean>
+    
+    <!-- 自定义参数绑定
+    	class:E:\javaPro\spring_mybatis0823\WebRoot\WEB-INF\lib\spring-context-3.1.1.RELEASE.jar
+     -->
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+    	<property name="converters">
+    		<list>
+    			<!-- 自定义类 日期类型装换 -->
+    			<bean class="cn.hr.ssm.controller.converter.CustomDateConverter" />
+    		</list>
+    	</property>
+    </bean>
+    
+    <!-- springmvc拦截器配置 -->
+   <mvc:interceptors>
+    	<!-- 多个拦截器，顺序执行 -->
+    	<mvc:interceptor>
+    		<mvc:mapping path="/**"/>
+    		<bean class="cn.hr.ssm.interceptor.LoginInterceptor"></bean>
+    	</mvc:interceptor>
+    	<mvc:interceptor>
+    		<mvc:mapping path="/**"/>
+    		<bean class="cn.hr.ssm.interceptor.PermissionInterceptor"></bean>
+    	</mvc:interceptor>
+    </mvc:interceptors>
+    
+</beans>
